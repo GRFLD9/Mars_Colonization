@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+    {% block content %}
+        <meta charset="UTF-8">
+        <h2 style="align-content: center">Размещение по каютам</h2>
+        {% set a = 'Каюта №' %}
+        {% for astro in crew_members %}
+            <p class="crew">{{ astro }} - {{ a }} {{loop.index}}{% if loop.first %} - капитан корабля{% endif %}</p>
+        {% endfor %}
+    {% endblock %}

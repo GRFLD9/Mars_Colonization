@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block styles %}
+<style>
+    .alien {
+        width: 300px;
+        height: 500px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<meta charset="UTF-8">
+
+<h2 style="align-content: center">Оформление каюты</h2>
+<table style="align-content: center; margin-left: -150px">
+    <tr>
+        <th style="text-align: center; background-color: lightgray">Цвет стен</th>
+        <th style="text-align: center; background-color: lightgray">Эмблема</th>
+    </tr>
+    <tr>
+        {% if sex=='male' %}
+        {% if age<21 %}
+        <td style="width: 300px; height: 500px;background-color: #b0c4de"></td>
+        <td class='alien' style="background-image: url('/static/img/small.png')"></td>
+        {% else %}
+        <td style="width: 300px; height: 500px;background-color: #007ff0;"></td>
+        <td class='alien' style="background-image: url('/static/img/big.jpg')"></td>
+        {% endif %}
+        {% elif sex=='female' %}
+        {% if age<21 %}
+        <td style="width: 300px; height: 500px;background-color: #ffa07a; "></td>
+        <td class='alien'></td>
+        {% else %}
+        <td style="width: 300px; height: 500px;background-color: #ff4500;"></td>
+        <td class='alien' style="background-image: url('/static/img/big.jpg')"></td>
+        {% endif %}
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            Есть всего два пола...
+        </div>
+        {% endif %}
+    </tr>
+</table>
+{% endblock %}

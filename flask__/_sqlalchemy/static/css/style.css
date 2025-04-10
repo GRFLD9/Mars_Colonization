@@ -1,0 +1,49 @@
+h4 {
+    color: gray;
+    padding-left: 20px;
+}
+
+p {
+    font-size: 18pt;
+}
+
+#danger_access::before {
+    content: '';
+    display: inline-block;
+    background: url(../img/MARS-2-7.png) no-repeat;
+    width: 150px;
+    height: 50px;
+    float: left;
+}
+
+.crew {
+    margin-left: -40px;
+}
+
+
+#slideshow {
+    max-width: 800px;
+    height: 500px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#slideshow img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+#slideshow img.active {
+    opacity: 1;
+}
+
+.controls {
+    margin: 20px;
+}

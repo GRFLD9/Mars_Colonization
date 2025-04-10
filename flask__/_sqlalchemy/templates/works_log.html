@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block styles %}
+<style>
+    th {
+        background-color: #dddddd;
+        padding-left: 10px;
+        height: min-content;
+    }
+    td {
+        background-color: #eeeeff;
+        padding: 10px 15px;
+    }
+
+    table {
+        width: 100%;
+        font-size: 14px;
+    }
+    th, td {
+        font-weight: normal;
+        text-align: center;
+    }
+
+
+</style>
+{% endblock %}
+{% block content %}
+<meta charset="UTF-8">
+
+<h2 style="text-align: center">Works log</h2>
+<div style="align-content: space-around; justify-content: center; display: flex; flex-direction: column;">
+    {% for work in works %}
+    <div>
+    <h3 style="text-align: left">Action # {{work.id}}</h3>
+    <table>
+        <colgroup>
+            <col style="width: 40%;">
+            <col style="width: 20%;">
+            <col style="width: 15%">
+            <col style="width: 25%">
+            <col style="width: 15%">
+        </colgroup>
+    <tr>
+        <th style="text-align: left; ">Title of activity</th>
+        <th style="text-align: left">Team leader</th>
+        <th>Duration</th>
+        <th>List of collaborators</th>
+        <th>Is finished</th>
+    </tr>
+    <tr>
+        <td style="text-align: left">{{ work.job }}</td>
+        <td style="text-align: left">{{ work.user.surname }} {{ work.user.name }}</td>
+        <td>{{ work.work_size }}</td>
+        <td>{{ work.collaborators }}</td>
+        {% if not work.is_finished %}
+            <td style="background-color: #ffeeff;">Is not finished</td>
+        {% else %}
+            <td style="background-color: #d0f0c0;">Is finished</td>
+        {% endif %}
+    </tr>
+    </table>
+    </div>
+    <br>
+    {% endfor %}
+</div>
+
+{% endblock %}

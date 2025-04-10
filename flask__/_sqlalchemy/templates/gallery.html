@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="text-align: center">Пейзажи Марса</h2>
+
+<div id="slideshow">
+    {% for image in images %}
+    <img src="{{ url_for('static', filename=image) }}"
+         alt="Марсианский пейзаж"
+         {% if loop.first %}class="active" {% endif %}>
+    {% endfor %}
+</div>
+
+<div class="controls" style="align-content: center; text-align: center">
+    <button class="btn btn-primary" onclick="pauseSlideshow()">⏸ Пауза</button>
+    <button class="btn btn-primary" onclick="resumeSlideshow()">▶ Продолжить</button>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('#slideshow img');
+    let current = 0;
+    let interval = 3000;
+    let slideshowInterval;
+
+    function nextSlide() {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+    }
+
+    function startSlideshow() {
+        slideshowInterval = setInterval(nextSlide, interval);
+    }
+
+    function pauseSlideshow() {
+        clearInterval(slideshowInterval);
+    }
+
+    function resumeSlideshow() {
+        pauseSlideshow();
+        startSlideshow();
+    }
+
+    window.onload = startSlideshow;
+</script>
+
+<div class="upload-form" style="align-content: center; text-align: center">
+    <form method="post" enctype="multipart/form-data">
+        <p>Добавить картинку</p>
+        <input type="file" name="image" required>
+        <button class="btn btn-primary" type="submit">Отправить</button>
+    </form>
+</div>
+
+{% if message %}
+<p class="message">{{ message }}</p>
+{% endif %}
+{% endblock %}

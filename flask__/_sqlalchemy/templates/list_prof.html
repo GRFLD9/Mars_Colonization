@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<meta charset="UTF-8">
+<h2 style="align-content: center">Список профессий</h2>
+{% if list=='ol' %}
+<ol>
+    {% for i in profs %}
+    <li>{{ i }}</li>
+    {% endfor %}
+</ol>
+{% elif list=='ul' %}
+<ul>
+    {% for i in profs %}
+    <li>{{ i }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<h6>Неверный параметр</h6>
+{% endif %}
+{% endblock %}
