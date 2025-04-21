@@ -1,10 +1,12 @@
 from flask import Flask, render_template, redirect
+from flask_login import LoginManager, login_user, login_required, logout_user
 
 from data import db_session
-from data.departments import Department
 from data.jobs import Jobs
 from data.users import User
-from forms.user import RegisterForm
+from forms.registration import RegisterForm
+from forms.login import LoginForm
+from forms.jobs import JobsForm
 
 db_session.global_init("db/mars_explorer.db")
 db_sess = db_session.create_session()
@@ -12,23 +14,14 @@ db_sess = db_session.create_session()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
-department = db_sess.query(Department).filter(Department.id == 1).first()
-users = db_sess.query(User).filter(User.id.in_(str(department.members).split(', '))).all()
-for user in set(users):
-    user_works = db_sess.query(Jobs).filter(
-        (Jobs.collaborators.contains(str(user.id))) | (Jobs.team_leader == user.id)).all()
-    s = 0
-    for work in user_works:
-        tdlt = (work.end_date - work.start_date)
-        s += tdlt.total_seconds() / 3600
-    if s > 25:
-        print(user.surname, user.name)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 @app.route("/")
 def index():
     jobs = db_sess.query(Jobs).all()
-    return render_template("works_log.html", works=jobs)
+    return render_template("works_log.html", title='Works Log', works=jobs)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -39,7 +32,6 @@ def reqister():
             return render_template('register.html', title='Registration',
                                    form=form,
                                    message="Passwords don't match")
-        db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Registration',
                                    form=form,
@@ -58,6 +50,68 @@ def reqister():
         db_sess.commit()
         return redirect('/login')
     return render_template('register.html', title='Registration', form=form)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db_sess.query(User).get(user_id)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Authorization', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
+@app.route('/addjob', methods=['GET', 'POST'])
+def add_job():
+    form = JobsForm()
+    if form.validate_on_submit():
+        if invalid_user_ids([form.team_lead.data]):
+            return render_template('job_add.html',
+                                   title='Adding a job',
+                                   form=form,
+                                   message=f"User with ID {form.team_lead.data} not found")
+
+        collaborators_ids = [int(x) for x in form.collaborators.data.split(', ')]
+        invalid_ids = invalid_user_ids(collaborators_ids)
+
+        if invalid_ids:
+            return render_template('job_add.html',
+                                   title='Adding a job',
+                                   form=form,
+                                   message=f"Users with IDs {', '.join(invalid_ids)} not found")
+        work = Jobs(
+            team_leader=form.team_lead.data,
+            job=form.title.data,
+            work_size=form.work_size.data,
+            collaborators=form.collaborators.data,
+            is_finished=form.finished.data,
+        )
+        db_sess.add(work)
+        db_sess.commit()
+        return redirect("/")
+    return render_template('job_add.html', title='Adding a job', form=form)
+
+
+def invalid_user_ids(ids):
+    invalid = [str(id1) for id1 in ids if not db_sess.query(User).get(id1)]
+    return invalid if invalid else None
 
 
 def main():
