@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect
 
 from data import db_session
+from data.departments import Department
 from data.jobs import Jobs
 from data.users import User
 from forms.user import RegisterForm
@@ -10,6 +11,18 @@ db_sess = db_session.create_session()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+department = db_sess.query(Department).filter(Department.id == 1).first()
+users = db_sess.query(User).filter(User.id.in_(str(department.members).split(', '))).all()
+for user in set(users):
+    user_works = db_sess.query(Jobs).filter(
+        (Jobs.collaborators.contains(str(user.id))) | (Jobs.team_leader == user.id)).all()
+    s = 0
+    for work in user_works:
+        tdlt = (work.end_date - work.start_date)
+        s += tdlt.total_seconds() / 3600
+    if s > 25:
+        print(user.surname, user.name)
 
 
 @app.route("/")
