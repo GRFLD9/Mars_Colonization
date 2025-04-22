@@ -6,6 +6,7 @@
         padding-left: 10px;
         height: min-content;
     }
+
     td {
         background-color: #eeeeff;
         padding: 10px 15px;
@@ -15,11 +16,11 @@
         width: 100%;
         font-size: 14px;
     }
+
     th, td {
         font-weight: normal;
         text-align: center;
     }
-
 
 </style>
 {% endblock %}
@@ -27,10 +28,28 @@
 <meta charset="UTF-8">
 
 <h2 style="text-align: center">Works log</h2>
-<div style="align-content: space-around; justify-content: center; display: flex; flex-direction: column;">
-    {% for work in works %}
-    <div>
-    <h3 style="text-align: left">Action # {{work.id}}</h3>
+<div style="margin-bottom: 20px;">
+    {% if current_user.is_authenticated %}
+    <div style="margin-bottom: 12px;">
+        <a href="addjob" class="btn btn-secondary" style="padding: 5px 10px; display: inline-block;">Add Job</a>
+    </div>
+    {% endif %}
+
+    {% for index, work in works %}
+    {% if current_user.is_authenticated and current_user == work.user %}
+    <div style="margin-bottom: 12px;">
+        <div style="display: flex; gap: 12px;">
+            <a href="/editjob/{{ work.id }}" class="btn btn-warning" style="padding: 5px 10px; display: inline-block;">Edit
+                Job</a>
+            <a href="/deletejob/{{ work.id }}" class="btn btn-danger" style="padding: 5px 10px; display: inline-block;">Delete
+                Job</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div>
+    <h3 style="text-align: left">Action # {{ index }}</h3>
     <table>
         <colgroup>
             <col style="width: 40%;">
@@ -39,28 +58,28 @@
             <col style="width: 25%">
             <col style="width: 15%">
         </colgroup>
-    <tr>
-        <th style="text-align: left; ">Title of activity</th>
-        <th style="text-align: left">Team leader</th>
-        <th>Duration</th>
-        <th>List of collaborators</th>
-        <th>Is finished</th>
-    </tr>
-    <tr>
-        <td style="text-align: left">{{ work.job }}</td>
-        <td style="text-align: left">{{ work.user.surname }} {{ work.user.name }}</td>
-        <td>{{ work.work_size }}</td>
-        <td>{{ work.collaborators }}</td>
-        {% if not work.is_finished %}
+        <tr>
+            <th style="text-align: left; ">Title of activity</th>
+            <th style="text-align: left">Team leader</th>
+            <th>Duration</th>
+            <th>List of collaborators</th>
+            <th>Is finished</th>
+        </tr>
+        <tr>
+            <td style="text-align: left">{{ work.job }}</td>
+            <td style="text-align: left">{{ work.user.surname }} {{ work.user.name }}</td>
+            <td>{{ work.work_size }}</td>
+            <td>{{ work.collaborators }}</td>
+            {% if not work.is_finished %}
             <td style="background-color: #ffeeff;">Is not finished</td>
-        {% else %}
+            {% else %}
             <td style="background-color: #d0f0c0;">Is finished</td>
-        {% endif %}
-    </tr>
+            {% endif %}
+        </tr>
     </table>
-    </div>
-    <br>
-    {% endfor %}
+</div>
+<br>
+{% endfor %}
 </div>
 
 {% endblock %}
