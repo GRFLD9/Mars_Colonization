@@ -14,33 +14,32 @@
     {% endfor %}
     </p>
     <p>
-        {{ form.team_lead.label }}<br>
-        {{ form.team_lead(class="form-control") }}<br>
-        {% for error in form.team_lead.errors %}
+        {{ form.chief.label }}<br>
+        {{ form.chief(class="form-control") }}<br>
+        {% for error in form.chief.errors %}
     <div class="alert alert-danger" role="alert">
         {{ error }}
     </div>
     {% endfor %}
     </p>
     <p>
-        {{ form.work_size.label }}<br>
-        {{ form.work_size(class="form-control") }}<br>
-        {% for error in form.work_size.errors %}
+        {{ form.members.label }}<br>
+        {{ form.members(class="form-control") }}<br>
+        {% for error in form.members.errors %}
     <div class="alert alert-danger" role="alert">
         {{ error }}
     </div>
     {% endfor %}
     </p>
     <p>
-        {{ form.collaborators.label }}<br>
-        {{ form.collaborators(class="form-control") }}<br>
-        {% for error in form.collaborators.errors %}
-    <div class="alert alert-danger" role="alert">
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+    <p class="alert alert-danger" role="alert">
         {{ error }}
-    </div>
+    </p>
     {% endfor %}
     </p>
-    <p>{{ form.finished() }} {{ form.finished.label }}</p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     <div>{{ message }}</div>
 </form>

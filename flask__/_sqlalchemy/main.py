@@ -5,9 +5,12 @@ from sqlalchemy import or_
 from data import db_session
 from data.jobs import Jobs
 from data.users import User
+from data.departments import Department
+
 from forms.registration import RegisterForm
 from forms.login import LoginForm
 from forms.jobs import JobsForm
+from forms.departments import DepartmentsForm
 
 db_session.global_init("db/mars_explorer.db")
 db_sess = db_session.create_session()
@@ -24,6 +27,13 @@ def index():
     jobs = db_sess.query(Jobs).order_by(Jobs.id).all()
     numbered_jobs = list(enumerate(jobs, start=1))
     return render_template("works_log.html", title='Works Log', works=numbered_jobs)
+
+
+@app.route("/departments")
+def departments():
+    deps = db_sess.query(Department).order_by(Department.id).all()
+    numbered_deps = list(enumerate(deps, start=1))
+    return render_template("departments.html", title='List of Departments', deps=numbered_deps)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -162,7 +172,7 @@ def edit_job(id):
 
 @app.route('/deletejob/<int:id>', methods=['GET', 'POST'])
 @login_required
-def news_delete(id):
+def delete_job(id):
     job = db_sess.query(Jobs).filter(
         Jobs.id == id,
         or_(
@@ -176,6 +186,93 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/adddepartment', methods=['GET', 'POST'])
+def add_department():
+    form = DepartmentsForm()
+    if form.validate_on_submit():
+        if invalid_user_ids([form.chief.data]):
+            return render_template('department_add.html',
+                                   title='Adding a department',
+                                   form=form,
+                                   message=f"User with ID {form.chief.data} not found")
+
+        members_ids = [int(x) for x in form.members.data.split(', ')]
+        invalid_ids = invalid_user_ids(members_ids)
+
+        if invalid_ids:
+            return render_template('department_add.html',
+                                   title='Adding a department',
+                                   form=form,
+                                   message=f"Users with IDs {', '.join(invalid_ids)} not found")
+        dep = Department(
+            chief=form.chief.data,
+            title=form.title.data,
+            members=form.members.data,
+            email=form.email.data,
+        )
+        db_sess.add(dep)
+        db_sess.commit()
+        return redirect("/departments")
+    return render_template('department_add.html', title='Adding a department', form=form)
+
+
+@app.route('/editdepartment/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_department(id):
+    form = DepartmentsForm()
+    if request.method == "GET":
+        department = db_sess.query(Department).filter(
+            Department.id == id,
+            or_(
+                Department.chief == current_user.id,
+                current_user.id == 1,
+            )
+        ).first()
+        if department:
+            form.title.data = department.title
+            form.chief.data = department.chief
+            form.members.data = department.members
+            form.email.data = department.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        department = db_sess.query(Department).filter(
+            Department.id == id,
+            or_(
+                Department.chief == current_user.id,
+                current_user.id == 1,
+            )
+        ).first()
+        if department:
+            department.title = form.title.data
+            department.chief = form.chief.data
+            department.members = form.members.data
+            department.email = form.email.data
+            db_sess.commit()
+            return redirect('/departments')
+        else:
+            abort(404)
+    return render_template('department_add.html', title='Editing a department', form=form)
+
+
+@app.route('/deletedepartment/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_department(id):
+    department = db_sess.query(Department).filter(
+        Department.id == id,
+        or_(
+            Department.chief == current_user.id,
+            current_user.id == 1,
+        )
+    ).first()
+    if department:
+        db_sess.delete(department)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/departments')
 
 
 def main():

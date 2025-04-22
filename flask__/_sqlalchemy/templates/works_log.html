@@ -31,7 +31,11 @@
 <div style="margin-bottom: 20px;">
     {% if current_user.is_authenticated %}
     <div style="margin-bottom: 12px;">
-        <a href="addjob" class="btn btn-secondary" style="padding: 5px 10px; display: inline-block;">Add Job</a>
+        <div style="display: flex; gap: 12px;">
+            <a href="departments" class="btn btn-secondary" style="padding: 5px 10px; display: inline-block;">To
+                Departments</a>
+            <a href="addjob" class="btn btn-secondary" style="padding: 5px 10px; display: inline-block;">Add Job</a>
+        </div>
     </div>
     {% endif %}
 
