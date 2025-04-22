@@ -36,7 +36,7 @@
     {% endif %}
 
     {% for index, work in works %}
-    {% if current_user.is_authenticated and current_user == work.user %}
+    {% if current_user.is_authenticated and (current_user == work.user or current_user.id == 1) %}
     <div style="margin-bottom: 12px;">
         <div style="display: flex; gap: 12px;">
             <a href="/editjob/{{ work.id }}" class="btn btn-warning" style="padding: 5px 10px; display: inline-block;">Edit
