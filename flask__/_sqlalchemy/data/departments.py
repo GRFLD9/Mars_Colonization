@@ -1,5 +1,6 @@
 import sqlalchemy
 from sqlalchemy import orm
+from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
 
@@ -13,7 +14,7 @@ association_table = sqlalchemy.Table(
 )
 
 
-class Department(SqlAlchemyBase):
+class Department(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'department'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
