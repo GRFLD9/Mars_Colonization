@@ -56,17 +56,19 @@
     <h3 style="text-align: left">Action # {{ index }}</h3>
     <table>
         <colgroup>
-            <col style="width: 40%;">
+            <col style="width: 25%;">
             <col style="width: 20%;">
+            <col style="width: 10%">
             <col style="width: 15%">
-            <col style="width: 25%">
             <col style="width: 15%">
+            <col style="width: 10%">
         </colgroup>
         <tr>
             <th style="text-align: left; ">Title of activity</th>
             <th style="text-align: left">Team leader</th>
             <th>Duration</th>
             <th>List of collaborators</th>
+            <th>Hazard category</th>
             <th>Is finished</th>
         </tr>
         <tr>
@@ -74,6 +76,7 @@
             <td style="text-align: left">{{ work.user.surname }} {{ work.user.name }}</td>
             <td>{{ work.work_size }}</td>
             <td>{{ work.collaborators }}</td>
+            <td>{{ work.hazard_category.level }}</td>
             {% if not work.is_finished %}
             <td style="background-color: #ffeeff;">Is not finished</td>
             {% else %}

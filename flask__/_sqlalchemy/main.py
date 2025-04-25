@@ -3,14 +3,14 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from sqlalchemy import or_
 
 from data import db_session
+from data.category import HazardCategory
+from data.departments import Department
 from data.jobs import Jobs
 from data.users import User
-from data.departments import Department
-
-from forms.registration import RegisterForm
-from forms.login import LoginForm
-from forms.jobs import JobsForm
 from forms.departments import DepartmentsForm
+from forms.jobs import JobsForm
+from forms.login import LoginForm
+from forms.registration import RegisterForm
 
 db_session.global_init("db/mars_explorer.db")
 db_sess = db_session.create_session()
@@ -93,6 +93,11 @@ def logout():
 @app.route('/addjob', methods=['GET', 'POST'])
 def add_job():
     form = JobsForm()
+    form.hazard_category.choices = [
+                                       (0, 'No category')] + [
+                                       (c.id, f"{c.name} (Level {c.level})")
+                                       for c in db_sess.query(HazardCategory).order_by(HazardCategory.level)
+                                   ]
     if form.validate_on_submit():
         if invalid_user_ids([form.team_lead.data]):
             return render_template('job_add.html',
@@ -108,13 +113,18 @@ def add_job():
                                    title='Adding a job',
                                    form=form,
                                    message=f"Users with IDs {', '.join(invalid_ids)} not found")
+        hazard_category = None
+        if form.hazard_category.data != 0:
+            hazard_category = db_sess.get(HazardCategory, form.hazard_category.data)
         work = Jobs(
             team_leader=form.team_lead.data,
             job=form.title.data,
             work_size=form.work_size.data,
             collaborators=form.collaborators.data,
             is_finished=form.finished.data,
+            hazard_category=hazard_category
         )
+
         db_sess.add(work)
         db_sess.commit()
         return redirect("/")

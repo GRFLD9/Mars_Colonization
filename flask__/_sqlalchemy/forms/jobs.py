@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, SubmitField, IntegerField, StringField
+from wtforms import BooleanField, SubmitField, IntegerField, StringField, SelectField
 from wtforms.validators import DataRequired, Regexp
 
 
@@ -13,3 +13,9 @@ class JobsForm(FlaskForm):
                                                                                "(обязателен пробел после запятой)")])
     finished = BooleanField("Is Job Finished?")
     submit = SubmitField('Submit')
+
+    hazard_category = SelectField(
+        'Hazard Category',
+        coerce=int,
+        choices=[]
+    )
