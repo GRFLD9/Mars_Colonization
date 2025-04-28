@@ -27,6 +27,6 @@ class Jobs(SqlAlchemyBase, SerializerMixin):
     end_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True, default=datetime.datetime.now)
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True, default=False)
 
-    user = orm.relationship('User')
-
-    hazard_category = orm.relationship("HazardCategory", backref="jobs")
+    user = orm.relationship("User", foreign_keys=[team_leader])
+    hazard_category = orm.relationship("HazardCategory")
+    serialize_rules = ('-user.jobs', '-hazard_category.jobs')
