@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
+import requests
+from flask import Flask, render_template, redirect, request, abort, make_response, jsonify, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from sqlalchemy import or_
 
-from data import db_session, jobs_api
+from data import db_session, jobs_api, users_api
 from data.category import HazardCategory
 from data.departments import Department
 from data.jobs import Jobs
@@ -66,6 +67,7 @@ def reqister():
             age=form.age.data,
             position=form.position.data,
             speciality=form.speciality.data,
+            city_from=form.city_from.data
         )
         user.set_password(form.password.data)
         db_sess.add(user)
@@ -295,8 +297,28 @@ def delete_department(id):
     return redirect('/departments')
 
 
+@app.route('/users_show/<int:user_id>')
+@login_required
+def show_user_city(user_id):
+    # Получаем данные через API
+    response = requests.get(f'http://localhost:5000/api/users/{user_id}/city')
+
+    if response.status_code != 200:
+        abort(response.status_code)
+
+    data = response.json()
+    return render_template(
+        'user_city.html',
+        title=f"Nostalgy",
+        user=data['user'],
+        coordinates=data['coordinates'],
+        address=data.get('address', data['user']['city_from'])
+    )
+
+
 def main():
     app.register_blueprint(jobs_api.blueprint)
+    app.register_blueprint(users_api.blueprint)
     app.run()
 
 

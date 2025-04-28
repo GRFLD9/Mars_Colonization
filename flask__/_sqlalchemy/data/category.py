@@ -11,7 +11,7 @@ class HazardCategory(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     level = sqlalchemy.Column(sqlalchemy.Integer, nullable=False, unique=True)
-    job = orm.relationship('Jobs')
+    jobs = orm.relationship("Jobs", back_populates="hazard_category")
 
     def __repr__(self):
         return f"HazardCategory(level={self.level}, name='{self.name}')"

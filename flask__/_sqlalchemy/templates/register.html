@@ -34,7 +34,7 @@
     <p>
         {{ form.surname.label }}<br>
         {{ form.surname(class="form-control") }}<br>
-        {% for error in form.name.errors %}
+        {% for error in form.surname.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
@@ -80,6 +80,15 @@
         {{ form.address.label }}<br>
         {{ form.address(class="form-control") }}<br>
         {% for error in form.address.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.city_from.label }}<br>
+        {{ form.city_from(class="form-control") }}<br>
+        {% for error in form.city_from.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>

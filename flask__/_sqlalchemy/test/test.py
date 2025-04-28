@@ -1,14 +1,8 @@
-from requests import post
+# Пример добавления города для пользователя
+from requests import put
 
-print(post('http://localhost:5000/api/jobs', json={}).json())
-
-print(post('http://localhost:5000/api/jobs',
-           json={'title': 'Заголовок'}).json())
-
-print(post('http://localhost:5000/api/jobs',
-           json={'job': 'Weld the broken piece of gateway number 1 in space',
-                 'work_size': 15,
-                 'team_leader': 3,
-                 'is_finished': False,
-                 'hazard_category_id': 4,
-                 'collaborators': '1, 2'}).json())
+# добавляем/обновляем город для пользователя с id=1
+response = put('http://localhost:5000/api/users/1', json={
+    'city_from': 'Москва'
+}).json()
+print(response)
