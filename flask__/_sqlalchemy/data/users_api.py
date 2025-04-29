@@ -197,8 +197,8 @@ def get_user_city_data(user_id):
                 'city_from': user.city_from
             },
             'coordinates': {
-                'longitude': longitude,
-                'latitude': latitude
+                'longitude': float(longitude),
+                'latitude': float(latitude)
             },
             'address': toponym.get('metaDataProperty', {}).get('GeocoderMetaData', {}).get('text', '')
         })

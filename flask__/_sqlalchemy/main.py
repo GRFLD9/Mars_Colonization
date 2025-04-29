@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, redirect, request, abort, make_response, jsonify, url_for
+from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from sqlalchemy import or_
 
@@ -152,6 +152,11 @@ def invalid_user_ids(ids):
 @login_required
 def edit_job(id):
     form = JobsForm()
+    form.hazard_category.choices = [
+                                       (0, 'No category')] + [
+                                       (c.id, f"{c.name} (Level {c.level})")
+                                       for c in db_sess.query(HazardCategory).order_by(HazardCategory.level)
+                                   ]
     if request.method == "GET":
         job = db_sess.query(Jobs).filter(
             Jobs.id == id,
@@ -160,14 +165,17 @@ def edit_job(id):
                 current_user.id == 1
             )
         ).first()
+
         if job:
             form.title.data = job.job
             form.team_lead.data = job.team_leader
             form.work_size.data = job.work_size
             form.collaborators.data = job.collaborators
             form.finished.data = job.is_finished
+            form.hazard_category.data = job.hazard_category
         else:
             abort(404)
+
     if form.validate_on_submit():
         job = db_sess.query(Jobs).filter(
             Jobs.id == id,
@@ -176,12 +184,16 @@ def edit_job(id):
                 current_user.id == 1
             )
         ).first()
+        hazard_category = None
+        if form.hazard_category.data != 0:
+            hazard_category = db_sess.get(HazardCategory, form.hazard_category.data)
         if job:
             job.job = form.title.data
             job.team_leader = form.team_lead.data
             job.work_size = form.work_size.data
             job.collaborators = form.collaborators.data
             job.is_finished = form.finished.data
+            job.hazard_category = hazard_category
             db_sess.commit()
             return redirect('/')
         else:
@@ -300,7 +312,6 @@ def delete_department(id):
 @app.route('/users_show/<int:user_id>')
 @login_required
 def show_user_city(user_id):
-    # Получаем данные через API
     response = requests.get(f'http://localhost:5000/api/users/{user_id}/city')
 
     if response.status_code != 200:

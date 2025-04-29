@@ -18,7 +18,11 @@
         {% if current_user.is_authenticated %}
         <p>
             <a class="navbar-brand" href="/logout">{{ current_user.name }} {{ current_user.surname }}</a>
+            {% if title == 'Nostalgy' %}
+            <a href="/" class="btn btn-secondary">Back to Jobs</a>
+            {% else %}
             <a class="btn btn-info mr-2" href="/users_show/{{ current_user.id }}">My Hometown</a>
+            {% endif %}
         </p>
         {% else %}
         <p>

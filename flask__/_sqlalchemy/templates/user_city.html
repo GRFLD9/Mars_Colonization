@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% block head %}
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=dee718a6-a941-408b-9c5d-4c5aa779caa9&lang=ru_RU" type="text/javascript"></script>
+{% block styles %}
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=0b19bf86-4123-4218-b7f7-3095c73df7da&lang=ru_RU" type="text/javascript"></script>
     <style>
         #map {
             width: 100%;
@@ -12,6 +12,15 @@
         }
         .city-info {
             margin-bottom: 20px;
+            text-align: center;
+        }
+        /* Скрываем элементы Яндекса */
+        .ymaps-2-1-79-copyright__wrap,
+        .ymaps-2-1-79-map-copyrights-promo,
+        .ymaps-2-1-79-_hidden-text {
+            display: none !important;
+            opacity: 0 !important;
+            height: 0 !important;
         }
     </style>
 {% endblock %}
@@ -19,15 +28,12 @@
 {% block content %}
 <div class="container">
     <div class="city-info">
-        <h2>{{ user.surname }} {{ user.name }}</h2>
-        <h3>Родной город: {{ address }}</h3>
+        <h3>Nostalgy</h3>
+        <h3>{{ user.surname }} {{ user.name }}</h3>
+        <h5>Hometown {{ user.city_from }}</h5>
     </div>
 
     <div id="map"></div>
-
-    <div class="text-center">
-        <a href="/" class="btn btn-primary">На главную</a>
-    </div>
 
     <script type="text/javascript">
         ymaps.ready(init);
@@ -36,28 +42,17 @@
             const map = new ymaps.Map("map", {
                 center: [{{ coordinates.latitude }}, {{ coordinates.longitude }}],
                 zoom: 12,
-                controls: ['zoomControl', 'typeSelector']
+                type: 'yandex#satellite',
+                suppressMapOpenBlock: true,
+                controls: []
             });
 
-            // Добавляем метку
-            const placemark = new ymaps.Placemark(
-                [{{ coordinates.latitude }}, {{ coordinates.longitude }}],
-                {
-                    hintContent: '{{ address }}',
-                    balloonContent: 'Родной город колониста'
-                },
-                {
-                    preset: 'islands#redDotIcon'
-                }
-            );
-
-            map.geoObjects.add(placemark);
-
-            // Опционально: подстраиваем карту под метку
-            map.setBounds(map.geoObjects.getBounds(), {
-                checkZoomRange: true,
-                zoomMargin: 50
-            });
+            setTimeout(() => {
+                const elements = document.querySelectorAll(
+                    '.ymaps-2-1-79-copyright, .ymaps-2-1-79-copyright__content'
+                );
+                elements.forEach(el => el.style.display = 'none');
+            }, 1000);
         }
     </script>
 </div>
