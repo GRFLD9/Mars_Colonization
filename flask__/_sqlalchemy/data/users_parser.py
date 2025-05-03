@@ -1,0 +1,23 @@
+from flask_restful import reqparse
+
+post_parser = reqparse.RequestParser()
+post_parser.add_argument('surname', required=True, help="Surname cannot be blank!")
+post_parser.add_argument('name', required=True, help="Name cannot be blank!")
+post_parser.add_argument('age', type=int, required=True, help="Age cannot be blank!")
+post_parser.add_argument('position', required=True, help="Position cannot be blank!")
+post_parser.add_argument('speciality', required=True, help="Speciality cannot be blank!")
+post_parser.add_argument('address', required=True, help="Address cannot be blank!")
+post_parser.add_argument('email', required=True, help="Email cannot be blank!")
+post_parser.add_argument('hashed_password', required=True, help="Password cannot be blank!")
+post_parser.add_argument('city_from', required=True, help="City cannot be blank!")
+
+put_parser = reqparse.RequestParser()
+put_parser.add_argument('surname', required=False)
+put_parser.add_argument('name', required=False)
+put_parser.add_argument('age', type=int, required=False)
+put_parser.add_argument('position', required=False)
+put_parser.add_argument('speciality', required=False)
+put_parser.add_argument('address', required=False)
+put_parser.add_argument('email', required=False)
+put_parser.add_argument('hashed_password', required=False)
+put_parser.add_argument('city_from', required=False)

@@ -1,9 +1,10 @@
 import requests
-from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
+from flask import Flask, render_template, redirect, request, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_restful import abort, Api
 from sqlalchemy import or_
 
-from data import db_session, jobs_api, users_api
+from data import db_session, jobs_api, users_api, users_resource, jobs_resource
 from data.category import HazardCategory
 from data.departments import Department
 from data.jobs import Jobs
@@ -18,6 +19,9 @@ db_sess = db_session.create_session()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+app = Flask(__name__)
+api = Api(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -69,6 +73,7 @@ def reqister():
             speciality=form.speciality.data,
             city_from=form.city_from.data
         )
+
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
@@ -330,6 +335,10 @@ def show_user_city(user_id):
 def main():
     app.register_blueprint(jobs_api.blueprint)
     app.register_blueprint(users_api.blueprint)
+    api.add_resource(users_resource.UsersListResource, '/api/v2/users')
+    api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:users_id>')
+    api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
+    api.add_resource(jobs_resource.JobsResource, '/api/v2/jobs/<int:jobs_id>')
     app.run()
 
 
